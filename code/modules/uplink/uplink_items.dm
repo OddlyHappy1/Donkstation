@@ -137,6 +137,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	var/discounted = FALSE
 	var/spawn_amount = 1	//How many times we should run the spawn
 	var/bonus_items	= null	//Bonus items you gain if you purchase it
+	var/faction_flags //bitflags for what factions each item has
 
 /datum/uplink_item/proc/get_discount()
 	return pick(4;0.75,2;0.5,1;0.25)
@@ -287,9 +288,45 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	starting_crate_value = 125
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 
+/datum/uplink_item/bundles_TC/role_surplus //blatantly stolen from surplus crate code
+	name = "Syndicate Faction Surplus Crate"
+	desc = "A crate of goodies, stocked purely with your employing faction's equipment. Rumored to contain a valuable assortment of items, \
+			but you never know. Contents are sorted to always be worth 50 TC."
+	item = /obj/structure/closet/crate
+	cost = 20
+	player_minimum = 20
+	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops, /datum/game_mode/traitor/internal_affairs, /datum/game_mode/incursion)
+	var/starting_crate_value = 50
+
 /datum/uplink_item/bundles_TC/surplus/purchase(mob/user, datum/component/uplink/U)
 	var/list/uplink_items = get_uplink_items(SSticker && SSticker.mode? SSticker.mode : null, FALSE, !check_include_modes, check_include_modes)	//If we are allowing all gamemodes, don't get items from nukeops that can't be used
 
+	var/crate_value = starting_crate_value
+	var/obj/structure/closet/crate/C = spawn_item(/obj/structure/closet/crate, user, U)
+	if(U.purchase_log)
+		U.purchase_log.LogPurchase(C, src, cost)
+	while(crate_value)
+		var/category = pick(uplink_items)
+		var/item = pick(uplink_items[category])
+		var/datum/uplink_item/I = uplink_items[category][item]
+
+		if(!I.surplus || prob(100 - I.surplus))
+			continue
+		if(crate_value < I.cost)
+			continue
+		crate_value -= I.cost
+		var/obj/goods = new I.item(C)
+		if(U.purchase_log)
+			U.purchase_log.LogPurchase(goods, I, 0)
+	return C
+
+/datum/uplink_item/bundles_TC/role_surplus/purchase(mob/user, datum/component/uplink/U)
+	var/list/uplink_items = get_uplink_items(SSticker && SSticker.mode? SSticker.mode : null, FALSE, TRUE, FALSE)
+	var/datum/antagonist/user_antag = user.mind.has_antag_datum(/datum/antagonist/changeling)
+	var/user_antag_faction = user_antag.synd_faction
+	for(var/datum/uplink_item/UI in uplink_items)
+		if(!(UI.faction_flags & user_antag_faction))
+			uplink_items -= UI
 	var/crate_value = starting_crate_value
 	var/obj/structure/closet/crate/C = spawn_item(/obj/structure/closet/crate, user, U)
 	if(U.purchase_log)
@@ -481,6 +518,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/pneumatic_cannon/pie/selfcharge
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_WAFFLE
 
 /datum/uplink_item/dangerous/bananashield
 	name = "Bananium Energy Shield"
@@ -491,6 +529,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 16
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_WAFFLE
 
 /datum/uplink_item/dangerous/clownsword
 	name = "Bananium Energy Sword"
@@ -500,6 +539,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 3
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_WAFFLE
 
 /datum/uplink_item/dangerous/bioterror
 	name = "Biohazardous Chemical Sprayer"
@@ -588,6 +628,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	desc = "These gloves let the user punch people very fast. Does not improve weapon attack speed or the meaty fists of a hulk."
 	item = /obj/item/clothing/gloves/rapid
 	cost = 8
+	faction_flags = SYND_FACTION_TIGER
 
 /datum/uplink_item/dangerous/guardian
 	name = "Holoparasites"
@@ -599,6 +640,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	player_minimum = 25
 	restricted = TRUE
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_SELF
 
 /datum/uplink_item/dangerous/machinegun
 	name = "L6 Squad Automatic Weapon"
@@ -642,6 +684,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/ballistic/automatic/pistol
 	cost = 7
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX
 
 /datum/uplink_item/dangerous/bolt_action
 	name = "Surplus Rifle"
@@ -658,6 +701,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 12
 	surplus = 50
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/dangerous/foamsmg
 	name = "Toy Submachine Gun"
@@ -666,6 +710,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 5
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK
 
 /datum/uplink_item/dangerous/foammachinegun
 	name = "Toy Machine Gun"
@@ -675,6 +720,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 10
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK
 
 /datum/uplink_item/dangerous/foampistol
 	name = "Toy Pistol with Riot Darts"
@@ -683,6 +729,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/ballistic/automatic/toy/pistol/riot
 	cost = 2
 	surplus = 10
+	faction_flags = SYND_FACTION_DONK
 
 /datum/uplink_item/dangerous/semiautoturret
 	name = "Semi-Auto Turret"
@@ -692,6 +739,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/sbeacondrop/semiautoturret
 	cost = 8
 	include_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/dangerous/heavylaserturret
 	name = "Heavy Laser Turret"
@@ -701,6 +749,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/sbeacondrop/heavylaserturret
 	cost = 12
 	include_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_GORLEX
 
 
 // Stealthy Weapons
@@ -715,6 +764,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 5
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	surplus = 0
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_TIGER
 
 /datum/uplink_item/stealthy_weapons/cqc
 	name = "CQC Manual"
@@ -723,6 +773,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	cost = 12
 	surplus = 0
+	faction_flags = SYND_FACTION_TIGER
 
 /datum/uplink_item/stealthy_weapons/dart_pistol
 	name = "Dart Pistol"
@@ -731,6 +782,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/syringe/syndicate
 	cost = 3
 	surplus = 50
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/stealthy_weapons/dehy_carp
 	name = "Dehydrated Space Carp"
@@ -738,12 +790,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			your hand before use so it knows not to kill you."
 	item = /obj/item/toy/plush/carpplushie/dehy_carp
 	cost = 1
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/stealthy_weapons/edagger
 	name = "Energy Dagger"
 	desc = "A dagger made of energy that looks and functions as a pen when off."
 	item = /obj/item/pen/edagger
 	cost = 3
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/stealthy_weapons/martialartskarate
 	name = "Karate Scroll"
@@ -752,6 +806,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/book/granter/martial/karate
 	cost = 4
 	surplus = 40
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/stealthy_weapons/martialarts
 	name = "Martial Arts Scroll"
@@ -762,6 +817,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	player_minimum = 20
 	surplus = 10
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops, /datum/game_mode/incursion)
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/stealthy_weapons/radbow
 	name = "Gamma-Bow"
@@ -774,6 +830,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 8
 	surplus = 50
 	exclude_modes = list() // no reason not to have 5 guys turn the station into the chernobyl exclusion zone.
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/stealthy_weapons/crossbow
 	name = "Miniature Energy Crossbow"
@@ -787,7 +844,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 12
 	surplus = 50
 	exclude_modes = list(/datum/game_mode/nuclear)
-
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_DONK
 
 /datum/uplink_item/stealthy_weapons/origami_kit
 	name = "Boxed Origami Kit"
@@ -797,6 +854,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 6
 	surplus = 20
 	exclude_modes = list(/datum/game_mode/nuclear) //clown ops intentionally left in, because that seems like some s-tier shenanigans.
+	faction_flags = SYND_FACTION_WAFFLE | SYND_FACTION_DONK
 
 /datum/uplink_item/stealthy_weapons/traitor_chem_bottle
 	name = "Poison Kit"
@@ -804,6 +862,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/syndie_kit/chemical
 	cost = 7
 	surplus = 50
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_MI13 | SYND_FACTION_GORLEX
 
 /datum/uplink_item/stealthy_weapons/romerol_kit
 	name = "Romerol"
@@ -824,6 +883,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/pen/sleepy
 	cost = 5
 	exclude_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/stealthy_weapons/suppressor
 	name = "Suppressor"
@@ -832,6 +892,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 2
 	surplus = 10
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_MI13
 
 // Ammunition
 /datum/uplink_item/ammo
@@ -845,6 +906,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX
 
 /datum/uplink_item/ammo/pistolap
 	name = "10mm Armour Piercing Magazine"
@@ -854,6 +916,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 2
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX
 
 /datum/uplink_item/ammo/pistolhp
 	name = "10mm Hollow Point Magazine"
@@ -863,6 +926,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 3
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX
 
 /datum/uplink_item/ammo/pistolfire
 	name = "10mm Incendiary Magazine"
@@ -872,11 +936,13 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 2
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_GORLEX //not stealthy enough for MI13
 
 /datum/uplink_item/ammo/shotgun
 	cost = 2
 	include_modes = list(/datum/game_mode/nuclear)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_GORLEX
 
 /datum/uplink_item/ammo/shotgun/bag
 	name = "12g Ammo Duffel Bag"
@@ -924,6 +990,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 2
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/ammo/a40mm
 	name = "40mm Grenade Box"
@@ -1049,6 +1116,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 2
 	surplus = 0
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/ammo/bioterror
 	name = "Box of Bioterror Syringes"
@@ -1057,6 +1125,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/syndie_kit/bioterror
 	cost = 6
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/ammo/bolt_action
 	name = "Surplus Rifle Clip"
@@ -1088,6 +1157,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 4 //it is a bit cheaper than a minibomb because you have to take off your helmet to eat it, which is how you arm it
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/explosives/buzzkill
 	name = "Buzzkill Grenade Box"
@@ -1097,6 +1167,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 16
 	surplus = 35
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_TIGER
 
 /datum/uplink_item/explosives/c4
 	name = "Composition C-4"
@@ -1133,6 +1204,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 15
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/explosives/detomatix
 	name = "Detomatix PDA Cartridge"
@@ -1149,12 +1221,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			security's energy weapons and silicon lifeforms when you're in a tight spot."
 	item = /obj/item/storage/box/syndie_kit/emp
 	cost = 4
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/explosives/ducky
 	name = "Exploding Rubber Duck"
 	desc = "A seemingly innocent rubber duck. When placed, it arms, and will violently explode when stepped on."
 	item = /obj/item/deployablemine/traitor
 	cost = 4
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_MI13
 
 /datum/uplink_item/explosives/doorCharge
 	name = "Airlock Charge"
@@ -1162,6 +1236,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			To apply, remove the airlock's maintenance panel and place it within."
 	item = /obj/item/doorCharge
 	cost = 4
+	faction_flags = SYND_FACTION_SELF //something something AI door
 
 /datum/uplink_item/explosives/virus_grenade
 	name = "Fungal Tuberculosis Grenade"
@@ -1188,6 +1263,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			This variant has been fitted with high yield X4 charges for a larger explosion."
 	item = /obj/item/deployablemine/traitor/bigboom
 	cost = 10
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/explosives/pizza_bomb
 	name = "Pizza Bomb"
@@ -1196,12 +1272,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/pizzabox/bomb
 	cost = 3
 	surplus = 8
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_MI13
 
 /datum/uplink_item/explosives/soap_clusterbang
 	name = "Slipocalypse Clusterbang"
 	desc = "A traditional clusterbang grenade with a payload consisting entirely of Syndicate soap. Useful in any scenario!"
 	item = /obj/item/grenade/clusterbuster/soap
 	cost = 4
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/explosives/syndicate_bomb
 	name = "Syndicate Bomb"
@@ -1213,6 +1291,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			The bomb core can be pried out and manually detonated with other explosives."
 	item = /obj/item/sbeacondrop/bomb
 	cost = 12
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/explosives/syndicate_detonator
 	name = "Syndicate Detonator"
@@ -1223,6 +1302,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/syndicatedetonator
 	cost = 1
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/explosives/syndicate_minibomb
 	name = "Syndicate Minibomb"
@@ -1231,6 +1311,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/grenade/syndieminibomb
 	cost = 5
 	exclude_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/explosives/tearstache
 	name = "Teachstache Grenade"
@@ -1240,6 +1321,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 3
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/explosives/viscerators
 	name = "Viscerator Delivery Grenade"
@@ -1256,6 +1338,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/flashbulb/bomb
 	cost = 1
 	surplus = 8
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_MI13
 
 //Support and Mechs
 /datum/uplink_item/support
@@ -1344,6 +1427,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			with these cards."
 	item = /obj/item/card/id/syndicate
 	cost = 2
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER //this is kinda useful everywhere and everyone deserves it
 
 /datum/uplink_item/stealthy_tools/ai_detector
 	name = "Artificial Intelligence Detector"
@@ -1353,6 +1437,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			blind spots can help you identify escape routes."
 	item = /obj/item/multitool/ai_detect
 	cost = 1
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_SELF
 
 /datum/uplink_item/stealthy_tools/chameleon
 	name = "Chameleon Kit"
@@ -1361,6 +1446,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/syndie_kit/chameleon
 	cost = 2
 	exclude_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/stealthy_tools/chameleon_proj
 	name = "Chameleon Projector"
@@ -1368,6 +1454,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			move the projector from their hand. Disguised users move slowly, and projectiles pass over them."
 	item = /obj/item/chameleon
 	cost = 7
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/stealthy_tools/codespeak_manual
 	name = "Codespeak Manual"
@@ -1375,6 +1462,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			This manual teaches you this Codespeak. You can also hit someone else with the manual in order to teach them. This is the deluxe edition, which has unlimited uses."
 	item = /obj/item/codespeak_manual/unlimited
 	cost = 2
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/stealthy_tools/combatbananashoes
 	name = "Combat Banana Shoes"
@@ -1392,6 +1480,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 12
 	item = /obj/item/clothing/shoes/clown_shoes/taeclowndo
 	include_modes = list(/datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/stealthy_tools/emplight
 	name = "EMP Flashlight"
@@ -1401,6 +1490,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/flashlight/emp
 	cost = 3
 	surplus = 30
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/stealthy_tools/mulligan
 	name = "Mulligan"
@@ -1410,6 +1500,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 3
 	surplus = 30
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_TIGER
 
 /datum/uplink_item/stealthy_tools/syndigaloshes
 	name = "No-Slip Chameleon Shoes"
@@ -1418,6 +1509,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/clothing/shoes/chameleon/noslip
 	cost = 3
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/stealthy_tools/syndigaloshes/nuke
 	item = /obj/item/clothing/shoes/chameleon/noslip
@@ -1430,24 +1522,28 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	desc = "A headset reinforced to protect the ears from flashbangs, enhanced with chameleon disguise technology."
 	item = /obj/item/radio/headset/chameleon/bowman
 	cost = 2
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/stealthy_tools/chamweldinggoggles
 	name = "Chameleon Flashproof Glasses"
 	desc = "A pair of glasses reinforced to protect the eyes from welding flashes, enhanced with chameleon disguise technology."
 	item = /obj/item/clothing/glasses/chameleon/flashproof
 	cost = 2
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/stealthy_tools/chaminsuls
 	name = "Chameleon Combat Gloves"
 	desc = "A pair of gloves reinforced with fire and shock resistance, enhanced with chameleon disguise technology."
 	item = /obj/item/clothing/gloves/chameleon/combat
 	cost = 1
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF
 
 /datum/uplink_item/stealthy_tools/jammer
 	name = "Signal Jammer"
 	desc = "This device will disrupt any nearby outgoing wireless signals when activated."
 	item = /obj/item/jammer
 	cost = 5
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_SELF
 
 /datum/uplink_item/stealthy_tools/smugglersatchel
 	name = "Smuggler's Satchel"
@@ -1457,6 +1553,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	surplus = 30
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13
 
 //Space Suits and Hardsuits
 /datum/uplink_item/suits
@@ -1470,6 +1567,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			sightings, however."
 	item = /obj/item/storage/box/syndie_kit/space
 	cost = 3
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER //we're all syndicates down here
 
 /datum/uplink_item/suits/hardsuit
 	name = "Syndicate Hardsuit"
@@ -1481,6 +1579,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/clothing/suit/space/hardsuit/syndi
 	cost = 7
 	exclude_modes = list(/datum/game_mode/nuclear) //you can't buy it in nuke, because the elite hardsuit costs the same while being better
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/suits/hardsuit/spawn_item(spawn_path, mob/user, datum/component/uplink/U)
 	var/obj/item/clothing/suit/space/hardsuit/suit = ..()
@@ -1503,6 +1602,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 8
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	exclude_modes = list()
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/suits/hardsuit/shielded
 	name = "Shielded Syndicate Hardsuit"
@@ -1512,6 +1612,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 30
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	exclude_modes = list()
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 // Devices and Tools
 /datum/uplink_item/device_tools
@@ -1524,6 +1625,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/syndie_kit/cutouts
 	cost = 1
 	surplus = 20
+	faction_flags = SYND_FACTION_WAFFLE | SYND_FACTION_DONK
 
 /datum/uplink_item/device_tools/assault_pod
 	name = "Assault Pod Targeting Device"
@@ -1543,6 +1645,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 4
 	surplus = 75
 	restricted = TRUE
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/compressionkit
 	name = "Bluespace Compression Kit"
@@ -1552,6 +1655,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			Comes with 5 charges."
 	item = /obj/item/compressionkit
 	cost = 5
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/shuttlecapsule
 	name = "Bluespace Shuttle Capsule"
@@ -1564,6 +1668,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 8
 	//You get your own shuttle
 	exclude_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_ANIMAL //steal the animals onto your shuttle or something idk
 
 /datum/uplink_item/device_tools/magboots
 	name = "Blood-Red Magboots"
@@ -1573,6 +1678,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/clothing/shoes/magboots/syndie
 	cost = 2
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/device_tools/brainwash_disk
 	name = "Brainwashing Surgery Program"
@@ -1580,6 +1686,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	Insert into an Operating Console to enable the procedure."
 	item = /obj/item/disk/surgery/brainwashing
 	cost = 5
+	faction_flags = SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/device_tools/briefcase_launchpad
 	name = "Briefcase Launchpad"
@@ -1588,6 +1695,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	surplus = 30
 	item = /obj/item/storage/briefcase/launchpad
 	cost = 5
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/device_tools/camera_bug
 	name = "Camera Bug"
@@ -1595,12 +1703,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			Bugging cameras allows you to disable them remotely."
 	item = /obj/item/camera_bug
 	cost = 1
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/device_tools/military_belt
 	name = "Chest Rig"
 	desc = "A robust seven-slot set of webbing that is capable of holding all manner of tactical equipment."
 	item = /obj/item/storage/belt/military
 	cost = 1
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/device_tools/emag
 	name = "Cryptographic Sequencer"
@@ -1608,6 +1718,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			in electronic devices, subverts intended functions, and easily breaks security mechanisms."
 	item = /obj/item/card/emag
 	cost = 6
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL
 
 /datum/uplink_item/device_tools/fakenucleardisk
 	name = "Decoy Nuclear Authentication Disk"
@@ -1617,6 +1728,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	surplus = 1
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_MI13
 
 /datum/uplink_item/device_tools/syndicate_teleporter
 	name = "Experimental Syndicate Teleporter"
@@ -1626,6 +1738,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			Has 4 charges, recharges automatically. Warranty voided if exposed to EMP."
 	item = /obj/item/storage/box/syndie_kit/teleporter
 	cost = 8
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_GORLEX
 
 /datum/uplink_item/device_tools/frame
 	name = "F.R.A.M.E. PDA Cartridge"
@@ -1636,6 +1749,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/cartridge/virus/frame
 	cost = 4
 	restricted = TRUE
+	faction_flags = SYND_FACTION_GORLEX | SYND_FACTION_MI13
 
 /datum/uplink_item/device_tools/failsafe
 	name = "Failsafe Uplink Code"
@@ -1663,6 +1777,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/toolbox/syndicate
 	cost = 1
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/device_tools/syndie_glue
 	name = "Glue"
@@ -1672,6 +1787,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	item = /obj/item/syndie_glue
 	cost = 2
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/device_tools/hacked_module
 	name = "Hacked AI Law Upload Module"
@@ -1679,12 +1795,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			Be careful with wording, as artificial intelligences may look for loopholes to exploit."
 	item = /obj/item/aiModule/syndicate
 	cost = 9
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/hypnotic_flash
 	name = "Hypnotic Flash"
 	desc = "A modified flash able to hypnotize targets. If the target is not in a mentally vulnerable state, it will only confuse and pacify them temporarily."
 	item = /obj/item/assembly/flash/hypnotic
 	cost = 7
+	faction_flags = SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/device_tools/medgun
 	name = "Medbeam Gun"
@@ -1702,6 +1820,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			sends you a small beacon that will teleport the larger beacon to your location upon activation."
 	item = /obj/item/sbeacondrop
 	cost = 10
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/powersink
 	name = "Power Sink"
@@ -1711,6 +1830,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/powersink
 	cost = 10
 	player_minimum = 35
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/stimpack
 	name = "Stimpack"
@@ -1719,6 +1839,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/hypospray/medipen/pumpup
 	cost = 5
 	surplus = 90
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/device_tools/medkit
 	name = "Syndicate Combat Medic Kit"
@@ -1737,6 +1858,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	surplus = 50
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/device_tools/surgerybag
 	name = "Syndicate Surgery Duffel Bag"
@@ -1744,6 +1866,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			a Syndicate brand MMI, a straitjacket, and a muzzle."
 	item = /obj/item/storage/backpack/duffelbag/syndie/surgery
 	cost = 3
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_SELF
 
 /datum/uplink_item/device_tools/encryptionkey
 	name = "Syndicate Encryption Key"
@@ -1754,6 +1877,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	surplus = 75
 	exclude_modes = list(/datum/game_mode/incursion) //To prevent traitors from immediately outing the hunters to security.
 	restricted = TRUE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/device_tools/syndietome
 	name = "Syndicate Tome"
@@ -1772,6 +1896,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 4
 	include_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 	restricted = TRUE
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/device_tools/suspiciousphone
 	name = "Protocol CRAB-17 Phone"
@@ -1789,11 +1914,13 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			and artificial intelligence cores emit more of this light than cooler objects like walls and airlocks."
 	item = /obj/item/clothing/glasses/thermal/syndi
 	cost = 3
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 // Implants
 /datum/uplink_item/implants
 	category = "Implants"
 	surplus = 50
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_GORLEX
 
 /datum/uplink_item/implants/adrenal
 	name = "Adrenal Implant"
@@ -1860,6 +1987,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			On activation, it will conceal you inside a chameleon cardboard box that is only revealed once someone bumps into it."
 	item = /obj/item/storage/box/syndie_kit/imp_stealth
 	cost = 7
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/implants/storage
 	name = "Storage Implant"
@@ -1867,6 +1995,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			pocket capable of storing two regular-sized items."
 	item = /obj/item/storage/box/syndie_kit/imp_storage
 	cost = 7
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/implants/thermals
 	name = "Thermal Eyes"
@@ -1875,6 +2004,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 7
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_ANIMAL | SYND_FACTION_TIGER | SYND_FACTION_GORLEX
 
 /datum/uplink_item/implants/uplink
 	name = "Uplink Implant"
@@ -1893,6 +2023,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 9
 	surplus = 0
 	include_modes = list(/datum/game_mode/nuclear)
+	faction_flags = SYND_FACTION_CYBERSUN | SYND_FACTION_ANIMAL | SYND_FACTION_TIGER | SYND_FACTION_GORLEX
 
 
 //Race-specific items
@@ -1933,6 +2064,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 14
 	surplus = 0
 	restricted_species = list("lizard")
+	faction_flags = SYND_FACTION_TIGER
 
 // Role-specific items
 /datum/uplink_item/role_restricted
@@ -1963,6 +2095,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/pneumatic_cannon/pie/selfcharge
 	restricted_roles = list("Clown")
 	surplus = 0 //No fun unless you're the clown!
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/blastcannon
 	name = "Blast Cannon"
@@ -1973,6 +2106,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/blastcannon
 	cost = 14							//High cost because of the potential for extreme damage in the hands of a skilled scientist.
 	restricted_roles = list("Research Director", "Scientist")
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/role_restricted/crushmagboots
 	name = "Crushing Magboots"
@@ -1988,6 +2122,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/gorillacubes
 	cost = 6
 	restricted_roles = list("Geneticist", "Chief Medical Officer")
+	faction_flags = SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/rad_laser
 	name = "Radioactive Microlaser"
@@ -1998,6 +2133,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/healthanalyzer/rad_laser
 	restricted_roles = list("Medical Doctor", "Chief Medical Officer", "Roboticist", "Paramedic", "Brig Physician")
 	cost = 3
+	faction_flags = SYND_FACTION_MI13
 
 /datum/uplink_item/role_restricted/syndicate_mmi
 	name = "Syndicate MMI"
@@ -2005,6 +2141,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/mmi/syndie
 	restricted_roles = list("Roboticist", "Research Director")
 	cost = 2
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/role_restricted/upgrade_wand
 	name = "Upgrade Wand"
@@ -2012,6 +2149,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/upgradewand
 	restricted_roles = list("Stage Magician")
 	cost = 5
+	faction_flags = SYND_FACTION_SELF
 
 /datum/uplink_item/role_restricted/clown_bomb
 	name = "Clown Bomb"
@@ -2023,6 +2161,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/sbeacondrop/clownbomb
 	cost = 10
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/clown_grenade
 	name = "C.L.U.W.N.E"
@@ -2031,6 +2170,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/grenade/spawnergrenade/clown
 	cost = 3
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 
 /datum/uplink_item/role_restricted/clown_grenade_broken
@@ -2041,6 +2181,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/grenade/spawnergrenade/clown_broken
 	cost = 5
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 
 /datum/uplink_item/role_restricted/spider_injector
@@ -2052,6 +2193,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/syringe/spider_extract
 	cost = 10
 	restricted_roles = list("Research Director", "Scientist", "Roboticist")
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/role_restricted/clowncar
 	name = "Clown Car"
@@ -2065,6 +2207,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 20
 	restricted_roles = list("Clown")
 	exclude_modes = list(/datum/game_mode/incursion)
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/taeclowndo_shoes
 	name = "Tae-clown-do Shoes"
@@ -2072,6 +2215,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 12
 	item = /obj/item/clothing/shoes/clown_shoes/taeclowndo
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_TIGER
 
 /datum/uplink_item/role_restricted/superior_honkrender
 	name = "Superior Honkrender"
@@ -2080,6 +2224,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 8
 	restricted = TRUE
 	restricted_roles = list("Clown", "Chaplain")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/superior_honkrender
 	name = "Superior Honkrender"
@@ -2089,6 +2234,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 20
 	restricted = TRUE
 	restricted_roles = list("Clown", "Chaplain")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/concealed_weapon_bay
 	name = "Concealed Weapon Bay"
@@ -2098,6 +2244,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/mecha_parts/concealed_weapon_bay
 	cost = 3
 	restricted_roles = list("Roboticist", "Research Director")
+	faction_flags = SYND_FACTION_GORLEX | SYND_FACTION_SELF | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/role_restricted/haunted_magic_eightball
 	name = "Haunted Magic Eightball"
@@ -2147,6 +2294,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/glass/bottle/fluspanish
 	cost = 14
 	restricted_roles = list("Chaplain", "Virologist")
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/role_restricted/retrovirus
 	name = "Retrovirus Culture Bottle"
@@ -2155,6 +2303,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/glass/bottle/retrovirus
 	cost = 14
 	restricted_roles = list("Virologist", "Geneticist")
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_MI13
 
 /datum/uplink_item/role_restricted/random_disease
 	name = "Experimental Disease"
@@ -2163,14 +2312,16 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 5
 	restricted_roles = list("Virologist")
 	surplus = 20
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/role_restricted/anxiety
 	name = "Anxiety Culture Bottle"
-	desc = "A bottle of pure contagious autism.\
+	desc = "A bottle of that feeling when you left the stove on.\
 			At least, that's what the label says"
 	item = /obj/item/reagent_containers/glass/bottle/anxiety
 	cost = 4
 	restricted_roles = list("Virologist")
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/role_restricted/explosive_hot_potato
 	name = "Exploding Hot Potato"
@@ -2180,6 +2331,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 3
 	surplus = 0
 	restricted_roles = list("Cook", "Botanist", "Clown", "Mime")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/echainsaw
 	name = "Energy Chainsaw"
@@ -2188,6 +2340,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 10
 	player_minimum = 25
 	restricted_roles = list("Botanist", "Cook", "Bartender")
+	faction_flags = SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/role_restricted/holocarp
 	name = "Holocarp Parasites"
@@ -2200,6 +2353,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	player_minimum = 25
 	restricted = TRUE
 	restricted_roles = list("Cook", "Chaplain")
+	faction_flags = SYND_FACTION_SELF | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/ez_clean_bundle
 	name = "EZ Clean Grenade Bundle"
@@ -2209,6 +2363,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 6
 	surplus = 20
 	restricted_roles = list("Janitor")
+	faction_flags = SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/mimery
 	name = "Guide to Advanced Mimery Series"
@@ -2218,6 +2373,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/box/syndie_kit/mimery
 	restricted_roles = list("Mime")
 	surplus = 0
+	faction_flags = SYND_FACTION_MI13 //truly silent and stealthy.
 
 /datum/uplink_item/role_restricted/mimesabrekit
 	name = "Baguette blade bundle"
@@ -2235,6 +2391,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 5 //you need two for full damage, so total of 10 for maximum damage
 	limited_stock = 2 //you can't use more than two!
 	restricted_roles = list("Shaft Miner")
+	faction_flags = SYND_FACTION_GORLEX
 
 /datum/uplink_item/role_restricted/esaw_arm
 	name = "Energy Saw Arm Implant"
@@ -2242,6 +2399,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 8
 	item = /obj/item/autosurgeon/syndicate/esaw_arm
 	restricted_roles = list("Medical Doctor", "Chief Medical Officer", "Paramedic", "Brig Physician")
+	faction_flags = SYND_FACTION_CYBERSUN
 
 /datum/uplink_item/role_restricted/magillitis_serum
 	name = "Magillitis Serum Autoinjector"
@@ -2250,6 +2408,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/hypospray/medipen/magillitis
 	cost = 15
 	restricted_roles = list("Geneticist", "Chief Medical Officer")
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/role_restricted/modified_syringe_gun
 	name = "Modified Syringe Gun"
@@ -2257,6 +2416,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/syringe/dna
 	cost = 14
 	restricted_roles = list("Geneticist", "Chief Medical Officer")
+	faction_flags = SYND_FACTION_ANIMAL | SYND_FACTION_TIGER
 
 /datum/uplink_item/role_restricted/chemical_gun
 	name = "Reagent Dartgun"
@@ -2264,6 +2424,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/gun/chem
 	cost = 12
 	restricted_roles = list("Chemist", "Chief Medical Officer")
+	faction_flags = SYND_FACTION_ANIMAL
 
 /datum/uplink_item/role_restricted/reverse_bear_trap
 	name = "Reverse Bear Trap"
@@ -2273,6 +2434,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 4
 	item = /obj/item/reverse_bear_trap
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/role_restricted/reverse_revolver
 	name = "Reverse Revolver"
@@ -2281,6 +2443,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 13
 	item = /obj/item/storage/box/hug/reverse_revolver
 	restricted_roles = list("Clown")
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE | SYND_FACTION_GORLEX
 
 /datum/uplink_item/role_restricted/laser_arm
 	name = "Laser Arm Implant"
@@ -2288,7 +2451,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 12
 	item = /obj/item/autosurgeon/syndicate/laser_arm
 	restricted_roles = list("Roboticist", "Research Director")
-
+	faction_flags = SYND_FACTION_CYBERSUN
 
 // Pointless
 /datum/uplink_item/badass
@@ -2334,6 +2497,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/reagent_containers/food/drinks/syndicatebeer
 	cost = 4
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_DONK | SYND_FACTION_WAFFLE
 
 /datum/uplink_item/badass/syndiecash
 	name = "Syndicate Briefcase Full of Cash"
@@ -2344,6 +2508,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	restricted = TRUE
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/badass/syndiecards
 	name = "Syndicate Playing Cards"
@@ -2354,6 +2519,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	cost = 1
 	surplus = 40
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/badass/syndiecigs
 	name = "Syndicate Smokes"
@@ -2361,6 +2527,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	item = /obj/item/storage/fancy/cigarettes/cigpack_syndicate
 	cost = 2
 	illegal_tech = FALSE
+	faction_flags = SYND_FACTION_MI13 | SYND_FACTION_GORLEX | SYND_FACTION_CYBERSUN | SYND_FACTION_SELF | SYND_FACTION_ANIMAL | SYND_FACTION_WAFFLE | SYND_FACTION_DONK | SYND_FACTION_TIGER
 
 /datum/uplink_item/implants/deathrattle
 	name = "Box of Deathrattle Implants"

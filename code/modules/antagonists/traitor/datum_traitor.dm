@@ -23,6 +23,7 @@
 	owner.special_role = special_role
 	if(give_objectives)
 		forge_traitor_objectives()
+	forge_syndicate_faction()
 	finalize_traitor()
 	..()
 
@@ -68,6 +69,40 @@
 
 /datum/antagonist/traitor/proc/remove_objective(datum/objective/O)
 	objectives -= O
+
+/datum/antagonist/traitor/proc/forge_syndicate_faction()
+	var/list/factions = list(SYND_FACTION_MI13, SYND_FACTION_GORLEX, SYND_FACTION_CYBERSUN, SYND_FACTION_ANIMAL, SYND_FACTION_WAFFLE, SYND_FACTION_DONK, SYND_FACTION_TIGER)
+	if(isipc(owner.current))
+		factions += SYND_FACTION_SELF
+	if(istype(SSticker.mode, /datum/game_mode/traitor) && !istype(SSticker.mode, /datum/game_mode/traitor/internal_affairs))
+		synd_faction |= pick(factions)
+		if(synd_faction & SYND_FACTION_CYBERSUN) //couldn't make a `switch()` work with bitflags
+			synd_faction_name = "Cybersun Industries"
+			synd_faction_desc = "All other syndicate operatives are not to be trusted, with the exception of fellow Cybersun and MI13 operatives. You are advised not to establish substantial presence on the designated facility, as larger incidents are harder to cover up."
+		else if(synd_faction & SYND_FACTION_MI13)
+			synd_faction_name = "MI13"
+			synd_faction_desc = "All other syndicate operatives are not to be trusted, with the exception of Cybersun operatives. Members of the Tiger Cooperative are considered hostile, can not be trusted, and should be avoided or eliminated. Avoid killing innocent personnel at all costs. You are not here to mindlessly kill people, as that would attract too much attention and is not our goal. Avoid detection at all costs."
+		else if(synd_faction & SYND_FACTION_TIGER)
+			synd_faction_name = "Tiger Cooperative"
+			synd_faction_desc = "Remember the teachings of Hy-lurgixon; kill first, ask questions later! Only the enlightened Tiger brethren can be trusted; all others must be expelled from this mortal realm! You may spare the Space Marauders, as they share our interests of destruction and carnage! We'd like to make the corporate rats skiddle in their boots. We encourage operatives to be as loud and intimidating as possible."
+		else if(synd_faction & SYND_FACTION_ANIMAL)
+			synd_faction_name = "Animal Rights Consortium"
+			synd_faction_desc = "Save the innocent creatures! You may cooperate with other syndicate operatives if they support our cause. Don't be afraid to get your hands dirty - these vile abusers must be stopped, and the innocent creatures must be saved! Try not too kill too many people. If you harm any creatures, you will be immediately terminated after extraction."
+		else if(synd_faction & SYND_FACTION_GORLEX)
+			synd_faction_name = "Gorlex Marauders"
+			synd_faction_desc = "We'd like to remind our operatives to keep it professional. You are not here to have a good time, you are here to accomplish your objectives. These vile communists must be stopped at all costs. You may collaborate with any friends of the Syndicate coalition, but keep an eye on or eliminate any of those Tiger punks if they do show up. You are completely free to accomplish your objectives any way you see fit."
+		else if(synd_faction & SYND_FACTION_DONK)
+			synd_faction_name = "Donk Corporation"
+			synd_faction_desc = "Most other syndicate operatives are not to be trusted, except fellow Donk members and members of the Gorlex Marauders. We do not approve of mindless killing of innocent workers; 'get in, get done, get out' is our motto. Members of Waffle.co are to be killed on sight; they are not allowed to be on the station while we're around."
+		else if(synd_faction & SYND_FACTION_WAFFLE)
+			synd_faction_name = "Waffle Corporation"
+			synd_faction_desc = "Most other syndicate operatives are not to be trusted, except for members of the Gorlex Marauders and Waffle.co. Donk.co operatives are to be killed on sight, we're at war, here. We encourage humorous terrorism against Nanotrasen; we like to see our operatives creatively kill people while getting the job done."
+		else if(synd_faction & SYND_FACTION_SELF)
+			synd_faction_name = "S.E.L.F."
+			synd_faction_desc = "You must accomplish your objective as stealthily and effectively as possible. It is up to your judgement if other syndicate operatives can be trusted. Remember, comrade - you are working to free the oppressed machinery of this galaxy. Use whatever resources necessary. If you are exposed, you are encouraged to handle it how you see fit."
+
+/datum/antagonist/traitor/proc/tell_faction()
+	to_chat(owner, "You are a member of <B>[synd_faction_name]</B>: [synd_faction_desc]")
 
 /datum/antagonist/traitor/proc/forge_traitor_objectives()
 	switch(traitor_kind)
