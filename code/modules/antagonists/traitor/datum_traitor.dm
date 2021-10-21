@@ -388,6 +388,10 @@
 				traitorwin = FALSE
 			count++
 
+	if(synd_faction && synd_faction_name && !(synd_faction & SYND_FACTION_SYND))
+		var/faction_text = "[owner.current] belonged to the <b>[synd_faction_name]</b>!"
+		result += faction_text
+
 	if(uplink_true)
 		var/uplink_text = "(used [TC_uses] TC) [purchases]"
 		if(TC_uses==0 && traitorwin)

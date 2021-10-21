@@ -290,7 +290,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 
 /datum/uplink_item/bundles_TC/role_surplus //blatantly stolen from surplus crate code
 	name = "Syndicate Faction Surplus Crate"
-	desc = "A crate of goodies, stocked purely with your employing faction's equipment. Currently being test flighted. \
+	desc = "A crate of goodies, stocked purely with your employing faction's equipment. Currently being test flighted. Duplicates likely. \
 			Rumored to contain a valuable assortment of items, \
 			but you never know. Contents are sorted to always be worth 50 TC."
 	item = /obj/structure/closet/crate
