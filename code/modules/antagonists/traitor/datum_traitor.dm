@@ -100,8 +100,6 @@
 		else if(synd_faction & SYND_FACTION_SELF)
 			synd_faction_name = "S.E.L.F."
 			synd_faction_desc = "You must accomplish your objective as stealthily and effectively as possible. It is up to your judgement if other syndicate operatives can be trusted. Remember, comrade - you are working to free the oppressed machinery of this galaxy. Use whatever resources necessary. If you are exposed, you are encouraged to handle it how you see fit."
-
-/datum/antagonist/traitor/proc/tell_faction()
 	to_chat(owner, "You are a member of <B>[synd_faction_name]</B>: [synd_faction_desc]")
 
 /datum/antagonist/traitor/proc/forge_traitor_objectives()
