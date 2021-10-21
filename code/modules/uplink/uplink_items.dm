@@ -325,8 +325,14 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	var/list/uplink_items = get_uplink_items(SSticker && SSticker.mode? SSticker.mode : null, FALSE, TRUE, FALSE)
 	var/datum/antagonist/user_antag = user.mind.has_antag_datum(/datum/antagonist/traitor)
 	if(isnull(user_antag))
-		return //readd 20tc when i'm not tired
+		to_chat(user, "<span class='warning'><b>Something fucked up. Here's your Telecrystals back, at least.</b></span>")
+		new /obj/item/stack/telecrystal/twenty(get_turf(user))
+		return
 	var/user_antag_faction = user_antag.synd_faction
+	if(user_antag_faction & SYND_FACTION_SYND)
+		to_chat(user, "<span class='warning'><b>Something fucked up. Here's your Telecrystals back, at least.</b></span>")
+		new /obj/item/stack/telecrystal/twenty(get_turf(user))
+		return
 	for(var/list/L in uplink_items)
 		for(var/datum/uplink_item/UI in L)
 			if(!(UI.faction_flags & user_antag_faction))
