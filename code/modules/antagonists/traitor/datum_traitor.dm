@@ -23,7 +23,8 @@
 	owner.special_role = special_role
 	if(give_objectives)
 		forge_traitor_objectives()
-	forge_syndicate_faction()
+	if(traitor_kind == TRAITOR_HUMAN)
+		forge_syndicate_faction()
 	finalize_traitor()
 	..()
 

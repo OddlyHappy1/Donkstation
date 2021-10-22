@@ -353,7 +353,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 		if(!(I.faction_flags & user_antag_faction))
 			continue
 		if(istype(I, /datum/uplink_item/suits))
-			if(hardsuit_count < 3) //two suits max
+			if(hardsuit_count < 2) //two suits max
 				hardsuit_count += 1
 			else
 				continue
