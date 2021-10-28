@@ -114,6 +114,7 @@
 #include "code\__DEFINES\station.dm"
 #include "code\__DEFINES\status_effects.dm"
 #include "code\__DEFINES\subsystems.dm"
+#include "code\__DEFINES\synd_buylist.dm"
 #include "code\__DEFINES\text.dm"
 #include "code\__DEFINES\tgs.config.dm"
 #include "code\__DEFINES\tgs.dm"
