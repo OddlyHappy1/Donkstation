@@ -6,6 +6,7 @@
 	job_rank = ROLE_HERETIC
 	var/antag_hud_type = ANTAG_HUD_HERETIC // someone make all the other antags conform to this too lol
 	var/antag_hud_name = "heretic"
+	hijack_speed = 0.5
 	var/give_equipment = TRUE
 	var/list/researched_knowledge = list()
 	var/total_sacrifices = 0
@@ -91,11 +92,18 @@
 
 /datum/antagonist/heretic/proc/forge_primary_objectives()
 	if (prob(5))
-		var/datum/objective/ascend/AE = new()
-		AE.owner = owner
-		AE.update_explanation_text()
-		objectives += AE
-		log_objective(owner, AE.explanation_text)
+		if (prob(66))
+			var/datum/objective/ascend/AE = new()
+			AE.owner = owner
+			AE.update_explanation_text()
+			objectives += AE
+			log_objective(owner, AE.explanation_text)
+		else
+			var/datum/objective/hijack/hijack_objective = new
+			hijack_objective.owner = owner
+			hijack_objective.update_explanation_text()
+			objectives += hijack_objective
+			log_objective(owner, hijack_objective.explanation_text)
 	else
 		var/list/assasination = list()
 		var/list/protection = list()
