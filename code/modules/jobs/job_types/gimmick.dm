@@ -25,6 +25,12 @@
 /datum/outfit/job/gimmick
 	can_be_admin_equipped = FALSE // we want just the parent outfit to be unequippable since this leads to problems
 
+	allow_bureaucratic_error = FALSE
+	outfit = /datum/outfit/job/gimmick
+
+/datum/outfit/job/gimmick
+	can_be_admin_equipped = FALSE // we want just the parent outfit to be unequippable since this leads to problems
+
 /datum/job/gimmick/barber
 	title = "Barber"
 	flag = BARBER
@@ -33,6 +39,10 @@
 	minimal_access = list(ACCESS_MORGUE, ACCESS_MAINT_TUNNELS)
 	gimmick = TRUE
 	chat_color = "#bd9e86"
+
+	species_outfits = list(
+		SPECIES_PLASMAMAN = /datum/outfit/plasmaman
+	)
 
 /datum/outfit/job/gimmick/barber
 	name = "Barber"
@@ -54,6 +64,10 @@
 	minimal_access = list(ACCESS_THEATRE, ACCESS_MAINT_TUNNELS)
 	gimmick = TRUE
 	chat_color = "#b898b3"
+
+	species_outfits = list(
+		SPECIES_PLASMAMAN = /datum/outfit/plasmaman/magic
+	)
 
 /datum/outfit/job/gimmick/magician
 	name = "Stage Magician"
@@ -79,6 +93,10 @@
 	gimmick = TRUE
 	chat_color = "#929292"
 	departments = NONE		//being hobo is not a real job
+
+	species_outfits = list(
+		SPECIES_PLASMAMAN = /datum/outfit/plasmaman/hobo
+	)
 
 /datum/outfit/job/gimmick/hobo
 	name = "Debtor"
@@ -115,6 +133,10 @@
 	chat_color = "#a2dfdc"
 	departments = DEPARTMENT_MEDICAL
 
+	species_outfits = list(
+		SPECIES_PLASMAMAN = /datum/outfit/plasmaman
+	)
+
 /datum/outfit/job/gimmick/shrink //psychiatrist doesnt get much shit, but he has more access and a cushier paycheck
 	name = "Psychiatrist"
 	jobtype = /datum/job/gimmick/shrink
@@ -135,6 +157,10 @@
 	gimmick = TRUE
 	paycheck = PAYCHECK_VIP //our power is being fucking rich
 	chat_color = "#ebc96b"
+
+	species_outfits = list(
+		SPECIES_PLASMAMAN = /datum/outfit/plasmaman/vip
+	)
 
 /datum/outfit/job/gimmick/celebrity
 	name = "VIP"
