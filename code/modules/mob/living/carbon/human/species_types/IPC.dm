@@ -42,7 +42,6 @@
 	species_language_holder = /datum/language_holder/synthetic
 	special_step_sounds = list('sound/effects/servostep.ogg')
 
-	var/saved_screen //for saving the screen when they die
 	var/datum/action/innate/change_screen/change_screen
 
 /datum/species/ipc/random_name(unique)

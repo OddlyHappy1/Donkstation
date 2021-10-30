@@ -18,12 +18,6 @@
 
 	display_order = JOB_DISPLAY_ORDER_ASSISTANT
 	departments = DEPARTMENT_SERVICE
-	
-	allow_bureaucratic_error = FALSE
-	outfit = /datum/outfit/job/gimmick
-
-/datum/outfit/job/gimmick
-	can_be_admin_equipped = FALSE // we want just the parent outfit to be unequippable since this leads to problems
 
 	allow_bureaucratic_error = FALSE
 	outfit = /datum/outfit/job/gimmick
