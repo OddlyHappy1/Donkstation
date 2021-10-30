@@ -35,6 +35,11 @@
 		SPECIES_PLASMAMAN = /datum/outfit/plasmaman/cmo
 	)
 
+
+/datum/job/cmo/after_spawn(mob/living/carbon/human/H, mob/M)
+	. = ..()
+	job_tips(M, "chiefmedicalofficer")
+
 /datum/outfit/job/cmo
 	name = "Chief Medical Officer"
 	jobtype = /datum/job/cmo
