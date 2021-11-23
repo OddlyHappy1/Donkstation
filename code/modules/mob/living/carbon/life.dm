@@ -447,7 +447,7 @@ GLOBAL_LIST_INIT(ballmer_windows_me_msg, list("Yo man, what if, we like, uh, put
 		var/saved_dizz = dizziness
 		if(C)
 			var/oldsrc = src
-			var/amplitude = min(16, dizziness / 4 * (sin(dizziness * world.time) + 1)) // This shit is annoying at high strength
+			var/amplitude = min(16, dizziness / 4 * (sin(dizziness * world.time) + 1)) //DONKSTATION CHANGE: reduced power of dizziness overall
 			src = null
 			spawn(0)
 				if(C)

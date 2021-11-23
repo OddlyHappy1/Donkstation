@@ -137,8 +137,8 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	var/discounted = FALSE
 	var/spawn_amount = 1	//How many times we should run the spawn
 	var/bonus_items	= null	//Bonus items you gain if you purchase it
-	var/faction_flags //bitflags for what factions each item has
-	var/isgun = FALSE //surplus crate de-randomming
+	var/faction_flags //Donkstation change, bitflags for what factions each item has
+	var/isgun = FALSE //Donkstation change, surplus crate de-randomming
 
 /datum/uplink_item/proc/get_discount()
 	return pick(4;0.75,2;0.5,1;0.25)
@@ -289,7 +289,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	starting_crate_value = 125
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 
-/datum/uplink_item/bundles_TC/role_surplus //blatantly stolen from surplus crate code
+/datum/uplink_item/bundles_TC/role_surplus //Donkstation change, blatantly stolen from surplus crate code
 	name = "Syndicate Faction Surplus Crate"
 	desc = "A crate of goodies, stocked purely with your employing faction's equipment. Currently being test flighted. Duplicates likely. \
 			Rumored to contain a valuable assortment of items, \
@@ -321,7 +321,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 			U.purchase_log.LogPurchase(goods, I, 0)
 	return C
 
-/datum/uplink_item/bundles_TC/role_surplus/purchase(mob/user, datum/component/uplink/U)
+/datum/uplink_item/bundles_TC/role_surplus/purchase(mob/user, datum/component/uplink/U) //Donkstation change
 	var/hardsuit_count = 0 //i've gotten SIX in one crate before
 	var/gun_count = 0
 	var/list/uplink_items = get_uplink_items(SSticker && SSticker.mode? SSticker.mode : null, FALSE, TRUE, FALSE)
@@ -2097,7 +2097,7 @@ GLOBAL_LIST_INIT(uplink_items, subtypesof(/datum/uplink_item))
 	desc = "An implant injected into the body, allowing the use of an internal Syndicate radio. \
 			Has the Syndicate channel along with all on-station channels. \
 			Used just like a regular headset, but can be disabled to use external headsets normally and to avoid detection. \
-			You do have a syndicate-channel only one implanted in you, though."
+			You do have a syndicate-channel only one implanted in you, though." //DONKSTATION CHANGE: gave traitors syndicate radio implants
 	item = /obj/item/storage/box/syndie_kit/imp_radio
 	cost = 4
 	exclude_modes = list(/datum/game_mode/incursion) //To prevent traitors from immediately outing the hunters to security.

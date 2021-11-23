@@ -142,7 +142,7 @@ Bonus
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
 			var/S = H.dna.species
-			if(zombie && istype(S, /datum/species/zombie/infectious) && !istype(S, /datum/species/zombie/infectious/fast) && !istype(S, /datum/species/zombie/infectious/non_infectious))
+			if(zombie && istype(S, /datum/species/zombie/infectious) && !istype(S, /datum/species/zombie/infectious/fast) && !istype(S, /datum/species/zombie/infectious/non_infectious)) //DONKSTATION CHANGE: viro zombies no longer infect others
 				H.set_species(/datum/species/zombie/infectious/fast)
 				to_chat(M, "<span class='warning'>Your extraneous flesh sloughs off, giving you a boost of speed at the cost of a bit of padding!</span>")
 			else if(prob(base_message_chance))
@@ -154,7 +154,7 @@ Bonus
 	if(zombie)
 		if(ishuman(A.affected_mob))
 			if(!A.affected_mob.getorganslot(ORGAN_SLOT_ZOMBIE))
-				var/obj/item/organ/zombie_infection/non_infectious/ZI = new()
+				var/obj/item/organ/zombie_infection/non_infectious/ZI = new() //DONKSTATION CHANGE: viro zombies no longer infect others
 				ZI.Insert(M)
 	return 1
 

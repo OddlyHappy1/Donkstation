@@ -7,7 +7,7 @@ GLOBAL_LIST_EMPTY(gangs)
 	config_tag = "gang"
 	antag_flag = ROLE_GANG
 	restricted_jobs = list("Security Officer", "Warden", "Detective", "AI", "Cyborg","Captain", "Head of Personnel", "Head of Security")
-	required_players = 1
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1
 	recommended_enemies = 3
 	enemy_minimum_age = 14

@@ -157,7 +157,7 @@
 
 /datum/team/incursion/proc/forge_team_objectives()
 	objectives = list()
-	for(var/i = 1 to max(1, CONFIG_GET(number/incursion_objective_amount)))
+	for(var/i = 1 to max(1, CONFIG_GET(number/incursion_objective_amount))) //Donkstation change
 		forge_single_objective(2)
 	if(!(locate(/datum/objective/escape/single) in objectives))
 		add_objective(new/datum/objective/escape/single, FALSE)

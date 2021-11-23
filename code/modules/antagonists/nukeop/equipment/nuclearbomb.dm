@@ -34,7 +34,7 @@
 	var/lights = ""
 	var/interior = ""
 	var/proper_bomb = TRUE //Please
-	var/can_anchor = TRUE
+	var/can_anchor = TRUE //DONKSTATION CHANGE: nuclear bomb auto-anchors on arming
 	var/obj/effect/countdown/nuclearbomb/countdown
 	var/sound/countdown_music = null
 	COOLDOWN_DECLARE(arm_cooldown)
@@ -443,7 +443,7 @@
 	timing = !timing
 	if(timing)
 		can_anchor = FALSE
-		anchored = TRUE
+		anchored = TRUE //DONKSTATION CHANGE: Nuke auto-anchors on arming
 		to_chat(usr, "<span class='warning'>[src] anchors itself to the ground.</span>")
 		previous_level = get_security_level()
 		detonation_timer = world.time + (timer_set * 10)

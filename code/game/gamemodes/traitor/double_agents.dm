@@ -7,7 +7,7 @@
 	config_tag = "internal_affairs"
 	report_type = "internal_affairs"
 	false_report_weight = 10
-	required_players = 1
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1
 	recommended_enemies = 8
 	reroll_friendly = 0

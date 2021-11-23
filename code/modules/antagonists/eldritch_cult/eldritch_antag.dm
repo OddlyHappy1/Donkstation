@@ -90,7 +90,7 @@
 		EK.on_life(owner.current)
 
 /datum/antagonist/heretic/proc/forge_primary_objectives()
-	if (prob(5))
+	if (prob(5)) //Donkstation change
 		var/datum/objective/ascend/AE = new()
 		AE.owner = owner
 		AE.update_explanation_text()

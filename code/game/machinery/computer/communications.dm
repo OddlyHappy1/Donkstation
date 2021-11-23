@@ -289,6 +289,7 @@
 				deadchat_broadcast("<span class='deadsay'><span class='name'>[usr.real_name]</span> has messaged CentCom, \"[input]\" at <span class='name'>[get_area_name(usr, TRUE)]</span>.</span>", usr)
 				CM.lastTimeUsed = world.time
 
+		//DONKSTATION CHANGE START: Comms consoles can request an ERT
 		if("RequestERT")
 			if(authenticated)
 				if(!checkCCcooldown())
@@ -305,6 +306,7 @@
 				usr.log_talk(input, LOG_SAY, tag="CentCom announcement")
 				deadchat_broadcast("<span class='deadsay'><span class='name'>[usr.real_name]</span> has requested an ERT squad from CentCom, with the message, \"[input]\" at <span class='name'>[get_area_name(usr, TRUE)]</span>.</span>", usr)
 				CM.lastTimeUsed = world.time
+		//DONKSTATION CHANGE END
 
 		// OMG SYNDICATE ...LETTERHEAD
 		if("MessageSyndicate")
@@ -495,7 +497,7 @@
 					dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=changeseclevel'>Change Alert Level</A> \]"
 					dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=emergencyaccess'>Emergency Maintenance Access</A> \]"
 					dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=nukerequest'>Request Nuclear Authentication Codes</A> \]"
-					dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=RequestERT'>Request Emergency Response Team</A> \]"
+					dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=RequestERT'>Request Emergency Response Team</A> \]" //DONKSTATION CHANGE: comms consoles can request an ERT
 					if(!(obj_flags & EMAGGED))
 						dat += "<BR>\[ <A HREF='?src=[REF(src)];operation=MessageCentCom'>Send Message to CentCom</A> \]"
 					else

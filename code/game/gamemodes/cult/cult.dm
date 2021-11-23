@@ -40,7 +40,7 @@
 	false_report_weight = 1
 	restricted_jobs = list("Chaplain","AI", "Cyborg", "Security Officer", "Warden", "Detective", "Head of Security", "Captain", "Head of Personnel")
 	protected_jobs = list()
-	required_players = 1
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1
 	recommended_enemies = 4
 	enemy_minimum_age = 14

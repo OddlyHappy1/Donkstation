@@ -356,7 +356,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	//Character
 	READ_FILE(S["real_name"], real_name)
-	READ_FILE(S["flavor_text"], flavor_text)
+	READ_FILE(S["flavor_text"], flavor_text) //DONKSTATION CHANGE: added flavor text
 	READ_FILE(S["name_is_always_random"], be_random_name)
 	READ_FILE(S["body_is_always_random"], be_random_body)
 	READ_FILE(S["gender"], gender)
@@ -388,11 +388,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	READ_FILE(S["feature_ipc_antenna"], features["ipc_antenna"])
 	READ_FILE(S["feature_ipc_chassis"], features["ipc_chassis"])
 	READ_FILE(S["feature_insect_type"], features["insect_type"])
+	//DONKSTATION CHANGE START: added teshari
 	READ_FILE(S["feature_teshari_tail"], features["teshari_tail"])
 	READ_FILE(S["feature_teshari_tailfeather"], features["teshari_tailfeather"])
 	READ_FILE(S["feature_teshari_footfeather"], features["teshari_footfeather"])
 	READ_FILE(S["feature_teshari_handfeather"], features["teshari_handfeather"])
 	READ_FILE(S["feature_teshari_modeye"], features["teshari_modeye"])
+	//DONKSTATION CHANGE END
 	if(!CONFIG_GET(flag/join_with_mutant_humans) && !species_id != "felinid") // felinids arent mutant humans anymore i guess
 		features["tail_human"] = "none"
 		features["ears"] = "none"
@@ -478,11 +480,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	features["ipc_antenna"]	 = sanitize_inlist(features["ipc_antenna"], GLOB.ipc_antennas_list)
 	features["ipc_chassis"]	 = sanitize_inlist(features["ipc_chassis"], GLOB.ipc_chassis_list)
 	features["insect_type"]	 = sanitize_inlist(features["insect_type"], GLOB.insect_type_list)
+	//DONKSTATION CHANGE START: added teshari
 	features["teshari_tail"] = sanitize_inlist(features["teshari_tail"], GLOB.teshari_tails_list)
 	features["teshari_tailfeather"] = sanitize_inlist(features["teshari_tailfeather"], GLOB.teshari_tailfeathers_list)
 	features["teshari_footfeather"] = sanitize_inlist(features["teshari_footfeather"], GLOB.teshari_footfeathers_list)
 	features["teshari_handfeather"] = sanitize_inlist(features["teshari_handfeather"], GLOB.teshari_handfeathers_list)
 	features["teshari_modeye"] = sanitize_inlist(features["teshari_modeye"], GLOB.teshari_modeyes_list)
+	//DONKSTATION CHANGE END
 
 	//Validate species forced mutant parts
 	for(var/forced_part in pref_species.forced_features)
@@ -515,7 +519,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_ipc_screen"], features["ipc_screen"])
 	WRITE_FILE(S["feature_ipc_antenna"], features["ipc_antenna"])
 	WRITE_FILE(S["real_name"]			, real_name)
-	WRITE_FILE(S["flavor_text"]		, flavor_text)
+	WRITE_FILE(S["flavor_text"]		, flavor_text) //DONKSTATION CHANGE: added flavor text
 	WRITE_FILE(S["name_is_always_random"] , be_random_name)
 	WRITE_FILE(S["body_is_always_random"] , be_random_body)
 	WRITE_FILE(S["gender"]				, gender)
@@ -550,11 +554,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_ipc_antenna"]			, features["ipc_antenna"])
 	WRITE_FILE(S["feature_ipc_chassis"]			, features["ipc_chassis"])
 	WRITE_FILE(S["feature_insect_type"]			, features["insect_type"])
+	//DONKSTATION CHANGE START: added teshari
 	WRITE_FILE(S["feature_teshari_tail"]		, features["teshari_tail"])
 	WRITE_FILE(S["feature_teshari_tailfeather"]	, features["teshari_tailfeather"])
 	WRITE_FILE(S["feature_teshari_footfeather"]	, features["teshari_footfeather"])
 	WRITE_FILE(S["feature_teshari_handfeather"]	, features["teshari_handfeather"])
 	WRITE_FILE(S["feature_teshari_modeye"]		, features["teshari_modeye"])
+	//DONKSTATION CHANGE END
 
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)

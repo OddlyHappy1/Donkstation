@@ -276,6 +276,7 @@
 
 /obj/item/organ/tongue/robot/clockwork/better/handle_speech(datum/source, list/speech_args)
 	speech_args[SPEECH_SPANS] |= SPAN_ROBOT
+	//DONKSTATION CHANGE: removed large text from clockwork tongue
 
 /obj/item/organ/brain/clockwork
 	name = "enigmatic gearbox"

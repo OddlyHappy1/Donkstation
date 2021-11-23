@@ -9,7 +9,7 @@
 	. = list("<span class='info'>*---------*\nThis is [icon2html(src, user)] \a <EM>[src]</EM>!")
 
 
-	try
+	try  //DONKSTATION CHANGE: added flavor text
 		.+= "[src.flavor_text]"
 	catch
 

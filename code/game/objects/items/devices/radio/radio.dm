@@ -41,7 +41,7 @@
 	var/translate_binary = FALSE  // If true, can hear the special binary channel.
 	var/independent = FALSE  // If true, can say/hear on the special CentCom channel.
 	var/syndie = FALSE  // If true, hears all well-known channels automatically, and can say/hear on the Syndicate channel.
-	var/syndie_channel = FALSE //If true, can only hear syndicate channel
+	var/syndie_channel = FALSE //DONKSTATION CHANGE: If true, can only hear syndicate channel
 	var/list/channels = list()  // Map from name (see communications.dm) to on/off. First entry is current department (:h).
 	var/list/secure_radio_connections
 	var/radio_silent = FALSE // If true, radio doesn't make sound effects (ie for Syndicate internal radio implants)
@@ -327,7 +327,7 @@
 	// deny checks
 	if (!on || !listening || wires.is_cut(WIRE_RX))
 		return FALSE
-	if (freq == FREQ_SYNDICATE && !syndie && !syndie_channel)
+	if (freq == FREQ_SYNDICATE && !syndie && !syndie_channel) //DONKSTATION CHANGE: Auto-implanted syndicate radioes can only get syndicate channel
 		return FALSE
 	if (freq == FREQ_CENTCOM)
 		return independent  // hard-ignores the z-level check

@@ -17,6 +17,8 @@
 	var/list/authorized = list()
 	var/list/acted_recently = list()
 
+ //Donkstation change, removed hijack code
+
 /obj/machinery/computer/emergency_shuttle/attackby(obj/item/I, mob/user,params)
 	if(istype(I, /obj/item/card/id))
 		say("Please equip your ID card into your ID slot to authenticate.")

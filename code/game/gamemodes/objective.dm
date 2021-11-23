@@ -365,6 +365,8 @@ GLOBAL_LIST_EMPTY(objectives)
 	name = "protect nonhuman"
 	human_check = FALSE
 
+//DONKSTATION CHANGE: Completely removed hijack objective
+
 /datum/objective/elimination
 	name = "elimination"
 	explanation_text = "Slaughter all loyalist crew aboard the shuttle. You, and any likeminded individuals, must be the only remaining people on the shuttle."

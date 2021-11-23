@@ -5,7 +5,7 @@
 	report_type = "overthrow"
 	antag_flag = ROLE_OVERTHROW
 	restricted_jobs = list("Security Officer", "Warden", "Detective", "AI", "Cyborg","Captain", "Head of Personnel", "Head of Security", "Chief Engineer", "Research Director", "Chief Medical Officer")
-	required_players = 1 // the core idea is of a swift, bloodless coup, so it shouldn't be as chaotic as revs.
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1 // minimum two teams, otherwise it's just nerfed revs.
 	recommended_enemies = 4
 

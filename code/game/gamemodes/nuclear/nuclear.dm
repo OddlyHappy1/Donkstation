@@ -5,7 +5,7 @@
 	config_tag = "nuclear"
 	report_type = "nuclear"
 	false_report_weight = 10
-	required_players = 1 // 30 players - 3 players to be the nuke ops = 27 players remaining
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1
 	recommended_enemies = 5
 	antag_flag = ROLE_OPERATIVE

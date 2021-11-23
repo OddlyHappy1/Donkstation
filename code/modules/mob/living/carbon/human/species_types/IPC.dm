@@ -34,7 +34,7 @@
 	species_gibs = GIB_TYPE_ROBOTIC
 	attack_sound = 'sound/items/trayhit1.ogg'
 	allow_numbers_in_name = TRUE
-	deathsound = "sound/voice/borg_deathsound2.ogg"
+	deathsound = "sound/voice/borg_deathsound2.ogg" //DONKSTATION CHANGE: added IPC death sound
 	var/saved_screen //for saving the screen when they die
 	var/list/initial_species_traits //for getting these values back for assume_disguise()
 	var/list/initial_inherent_traits

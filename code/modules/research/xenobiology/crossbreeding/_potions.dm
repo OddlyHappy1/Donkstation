@@ -67,6 +67,7 @@ Slimecrossing Potions
 	qdel(src)
 
 //Love potion - Charged Pink
+//DONKSTATION CHANGE START: removed the love effects of the love potion, seriously is this ERP bait or something
 /obj/item/slimepotion/lovepotion
 	name = "awkward potion"
 	desc = "A pink chemical mix thought to make shit awkward."
@@ -88,7 +89,7 @@ Slimecrossing Potions
 //		return ..()
 
 	M.visible_message("<span class='danger'>[user] starts to feed [M] an awkward potion!</span>",
-		"<span class='userdanger'>[user] starts to feed you aan awkard potion!</span>")
+		"<span class='userdanger'>[user] starts to feed you an awkard potion!</span>")
 
 	if(!do_after(user, 50, target = M))
 		return
@@ -99,6 +100,7 @@ Slimecrossing Potions
 //	M.faction |= "[REF(user)]"
 //	M.apply_status_effect(STATUS_EFFECT_INLOVE, user)
 	qdel(src)
+//DONKSTATION CHANGE END
 
 //Pressure potion - Charged Dark Blue
 /obj/item/slimepotion/spaceproof

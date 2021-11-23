@@ -35,11 +35,13 @@
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/ipc_antennas, GLOB.ipc_antennas_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/ipc_chassis, GLOB.ipc_chassis_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/insect_type, GLOB.insect_type_list)
+	//DONKSTATION CHANGE START: added teshari
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/teshari_tails, GLOB.teshari_tails_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/teshari_tailfeathers, GLOB.teshari_tailfeathers_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/teshari_footfeathers, GLOB.teshari_footfeathers_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/teshari_handfeathers, GLOB.teshari_handfeathers_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/teshari_modeyes, GLOB.teshari_modeyes_list)
+	//DONKSTATION CHANGE END: added teshari
 
 	//Species
 	for(var/spath in subtypesof(/datum/species))

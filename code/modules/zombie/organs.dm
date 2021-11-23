@@ -8,7 +8,7 @@
 	var/datum/species/old_species = /datum/species/human
 	var/living_transformation_time = 30
 	var/converts_living = FALSE
-	var/infectious_variant = TRUE
+	var/infectious_variant = TRUE //DONKSTATION CHANGE: viro/surgery zombies no longer infect others
 
 	var/revive_time_min = 450
 	var/revive_time_max = 700
@@ -76,7 +76,7 @@
 
 	if(!iszombie(owner))
 		old_species = owner.dna.species.type
-		if(src.infectious_variant)
+		if(src.infectious_variant) //DONKSTATION CHANGE: surgery/viro zombies no longer infect others
 			owner.set_species(/datum/species/zombie/infectious)
 		else
 			owner.set_species(/datum/species/zombie/infectious/non_infectious)
@@ -96,7 +96,7 @@
 	playsound(owner.loc, 'sound/hallucinations/far_noise.ogg', 50, 1)
 	owner.do_jitter_animation(living_transformation_time)
 	owner.revive()
-	if(src.infectious_variant)
+	if(src.infectious_variant) //DONKSTATION CHANGE: surgery/viro zombies no longer infect others
 		var/datum/browser/popup = new(owner, "antagTips", null, 600, 400)
 		to_chat(owner, "<span class='alertalien'>You are now a zombie! Do not seek to be cured, do not help any non-zombies in any way, do not harm your zombie brethren and spread the disease by killing others. You are a creature of hunger and violence.</span>")
 		popup.set_window_options("titlebar=1;can_minimize=0;can_resize=0")
@@ -111,6 +111,3 @@
 
 /obj/item/organ/zombie_infection/nodamage
 	causes_damage = FALSE
-
-/obj/item/organ/zombie_infection/non_infectious
-	infectious_variant = FALSE

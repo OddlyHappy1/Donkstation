@@ -563,7 +563,7 @@
 	if(!owner.has_quirk(/datum/quirk/monochromatic))
 		owner.remove_client_colour(/datum/client_colour/monochrome)
 	to_chat(owner, "<span class='warning'>You snap out of your trance!</span>")
-	owner.visible_message("<span class='warning'>[owner] blinks rapidly.</span>")
+	owner.visible_message("<span class='warning'>[owner] blinks rapidly.</span>")  //DONKSTATION CHANGE: trance removal has a visible message
 
 /datum/status_effect/trance/proc/hypnotize(datum/source, list/hearing_args, list/spans, list/message_mods = list())
 	SIGNAL_HANDLER

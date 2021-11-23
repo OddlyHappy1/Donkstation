@@ -79,8 +79,8 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 #define isvampire(A) (is_species(A,/datum/species/vampire))
 #define isipc(A) (is_species(A, /datum/species/ipc))
 #define isapid(A) (is_species(A, /datum/species/apid))
-#define isteshari(A) (is_species(A, /datum/species/teshari))
-#define issquidperson(A) (is_species(A, /datum/species/squid))
+#define isteshari(A) (is_species(A, /datum/species/teshari)) //DONKSTATION CHANGE: added teshari
+#define issquidperson(A) (is_species(A, /datum/species/squid)) //DONKSTATION CHANGE: added custom emotes to more races
 //more carbon mobs
 #define ismonkey(A) (istype(A, /mob/living/carbon/monkey))
 

@@ -4,8 +4,8 @@ SUBSYSTEM_DEF(nightshift)
 	flags = SS_NO_TICK_CHECK
 
 	var/nightshift_active = FALSE
-	var/nightshift_start_time = 828000		//11:00 PM, station time
-	var/nightshift_end_time = 216000		//6:00 AM, station time
+	var/nightshift_start_time = 828000		//DONKSTATION CHANGE: 11:00 PM, station time
+	var/nightshift_end_time = 216000		//DONKSTATION CHANGE: 6:00 AM, station time
 	var/nightshift_first_check = 30 SECONDS
 
 	var/high_security_mode = FALSE

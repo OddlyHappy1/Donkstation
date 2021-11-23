@@ -67,7 +67,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	//character preferences
 	var/real_name						//our character's name
-	var/flavor_text						//Text that shows when character is examined
+	var/flavor_text						//DONKSTATION CHANGE: Text that shows when character is examined
 	var/be_random_name = 0				//whether we'll have a random name every round
 	var/be_random_body = 0				//whether we'll have a random body every round
 	var/gender = MALE					//gender of character (well duh)
@@ -85,7 +85,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/skin_tone = "caucasian1"		//Skin color
 	var/eye_color = "000"				//Eye color
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
-	var/list/features = list("mcolor" = "FFF", "ethcolor" = "9c3030", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "ipc_screen" = "Blue", "ipc_antenna" = "None", "ipc_chassis" = "Morpheus Cyberkinetics(Greyscale)", "insect_type" = "Common Fly", "teshari_tail" = "Tail", "teshari_tailfeather" = "Tail Feathers", "teshari_footfeather" = "Foot Feathers", "teshari_handfeather" = "Hand Feathers", "teshari_modeye" = "Normal")
+	var/list/features = list("mcolor" = "FFF", "ethcolor" = "9c3030", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "ipc_screen" = "Blue", "ipc_antenna" = "None", "ipc_chassis" = "Morpheus Cyberkinetics(Greyscale)", "insect_type" = "Common Fly", "teshari_tail" = "Tail", "teshari_tailfeather" = "Tail Feathers", "teshari_footfeather" = "Foot Feathers", "teshari_handfeather" = "Hand Feathers", "teshari_modeye" = "Normal") //DONKSTATION CHANGE: added teshari
 
 	var/list/custom_names = list()
 	var/preferred_ai_core_display = "Blue"
@@ -218,7 +218,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Name:</b> "
 			dat += "<a href='?_src_=prefs;preference=name;task=input'>[real_name]</a><BR>"
 
-			dat += "<b>Flavor Text:</b> "
+			dat += "<b>Flavor Text:</b> "  //DONKSTATION CHANGE: added flavor text
 			dat += "<a href='?_src_=prefs;preference=flavor_text;task=input'>[flavor_text ? flavor_text : "(none)"]</a><BR>"
 
 			if(!(AGENDER in pref_species.species_traits))
@@ -509,7 +509,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(mutant_category >= MAX_MUTANT_ROWS)
 					dat += "</td>"
 					mutant_category = 0
-
+			//DONKSTATION CHANGE START: added teshari
 			if("teshari_modeye" in pref_species.default_features) // todo: how can I put this where eyes usually are in customization, without fucking the rest of it up?
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
@@ -571,7 +571,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				dat += "<h3>Hand Feathers</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=teshari_handfeather;task=input'>[features["teshari_handfeather"]]</a><BR>"
-
+			//DONKSTATION CHANGE END
 			if(CONFIG_GET(flag/join_with_mutant_humans))
 
 				if("wings" in pref_species.default_features && GLOB.r_wings_list.len >1)
@@ -1340,7 +1340,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			switch(href_list["preference"])
 				if("name")
 					real_name = pref_species.random_name(gender,1)
-				if("flavor_text")
+				if("flavor_text") //DONKSTATION CHANGE: added flavor text
 					flavor_text = null
 				if("age")
 					age = rand(AGE_MIN, AGE_MAX)
@@ -1417,7 +1417,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						real_name = new_name
 					else
 						to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, -, ' and .</font>")
-				if("flavor_text")
+
+				if("flavor_text") //DONKSTATION CHANGE: added flavor text
 					var/new_text = input(user, "Please enter new flavor text (appears when examining you):", "Character Preference") as text|null
 					if (isnull(new_text))
 						return
@@ -1658,7 +1659,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 					if(new_insect_type)
 						features["insect_type"] = new_insect_type
-
+				//DONKSTATION CHANGE START: added teshari
 				if("teshari_tail")
 					var/new_teshari_tail
 
@@ -1698,7 +1699,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 					if(new_teshari_modeye)
 						features["teshari_modeye"] = new_teshari_modeye
-
+				//DONKSTATION CHANGE END
 				if("s_tone")
 					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in GLOB.skin_tones
 					if(new_s_tone)
@@ -2060,7 +2061,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	character.real_name = real_name
 	character.name = character.real_name
 
-	character.flavor_text = flavor_text
+	character.flavor_text = flavor_text //DONKSTATION CHANGE: added flavor text
 
 	character.gender = gender
 	character.age = age

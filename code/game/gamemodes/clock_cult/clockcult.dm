@@ -29,7 +29,7 @@ GLOBAL_VAR(clockcult_eminence)
 	config_tag = "clockcult"
 	report_type = "clockcult"
 	false_report_weight = 5
-	required_players = 1
+	required_players = 1 //DONKSTATION CHANGE: reduced required player count to 1
 	required_enemies = 1
 	recommended_enemies = 4
 	antag_flag = ROLE_SERVANT_OF_RATVAR

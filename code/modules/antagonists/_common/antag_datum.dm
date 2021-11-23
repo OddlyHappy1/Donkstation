@@ -18,10 +18,12 @@ GLOBAL_LIST(admin_antag_list)
 	var/list/objectives = list()
 	var/delay_roundend = TRUE
 	var/antag_memory = ""//These will be removed with antag datum
+	//DONKSTATION CHANGE START: traitors now get a syndicate faction
 	var/antag_moodlet //typepath of moodlet that the mob will gain with their status
 	var/synd_faction //bitflag mostly used for traitors, feel free to use elsewhere, mostly flavor
 	var/synd_faction_name //plaintext name of synd_faction
 	var/synd_faction_desc = "A generic traitor." // Use for the description & info of a faction.
+	//DONKSTATION CHANGE END
 
 	var/can_elimination_hijack = ELIMINATION_NEUTRAL //If these antags are alone when a shuttle elimination happens.
 

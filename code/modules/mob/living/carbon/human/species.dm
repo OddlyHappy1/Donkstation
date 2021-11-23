@@ -630,11 +630,11 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		else if ("tail_human" in mutant_bodyparts)
 			bodyparts_to_add -= "waggingtail_human"
 
-	if("teshari_tail" in mutant_bodyparts)
+	if("teshari_tail" in mutant_bodyparts) //DONKSTATION CHANGE: ADDED TESHARI
 		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
 			bodyparts_to_add -= "teshari_tail"
 
-	if("teshari_tailfeather" in mutant_bodyparts)
+	if("teshari_tailfeather" in mutant_bodyparts) //DONKSTATION CHANGE: ADDED TESHARI
 		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
 			bodyparts_to_add -= "teshari_tailfeather"
 
@@ -678,7 +678,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(!H.dna.features["ipc_screen"] || H.dna.features["ipc_screen"] == "None" || (H.wear_mask && (H.wear_mask.flags_inv & HIDEEYES)) || !HD)
 			bodyparts_to_add -= "ipc_screen"
 
-	if("teshari_modeye" in mutant_bodyparts)
+	if("teshari_modeye" in mutant_bodyparts) //DONKSTATION CHANGE: ADDED TESHARI
 		if(!H.dna.features["teshari_modeye"] || H.dna.features["teshari_modeye"] == "None" || (H.wear_mask && (H.wear_mask.flags_inv & HIDEEYES)) || !HD)
 			bodyparts_to_add -= "teshari_modeye"
 
@@ -761,6 +761,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.ipc_chassis_list[H.dna.features["ipc_chassis"]]
 				if("insect_type")
 					S = GLOB.insect_type_list[H.dna.features["insect_type"]]
+				//DONKSTATION CHANGE START: ADDED TESHARI
 				if("teshari_tail")
 					S = GLOB.teshari_tails_list[H.dna.features["teshari_tail"]]
 				if("teshari_tailfeather")
@@ -771,6 +772,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.teshari_handfeathers_list[H.dna.features["teshari_handfeather"]]
 				if("teshari_modeye")
 					S = GLOB.teshari_modeyes_list[H.dna.features["teshari_modeye"]]
+				//DONKSTATION CHANGE END
 			if(!S || S.icon_state == "none")
 				continue
 

@@ -16,7 +16,7 @@
 
 	. = list("<span class='info'>*---------*\nThis is <EM>[!obscure_name ? name : "Unknown"]</EM>!")
 
-	try
+	try //DONKSTATION CHANGE: added flavor text
 		. += "<i>[src.flavor_text]</i>"
 	catch
 
