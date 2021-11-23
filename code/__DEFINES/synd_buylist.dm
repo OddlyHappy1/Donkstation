@@ -1,3 +1,4 @@
+//DONKSTATION CHANGE: traitors get syndicate factions
 #define SYND_FACTION_CYBERSUN (1<<0)
 #define SYND_FACTION_MI13 (1<<1)
 #define SYND_FACTION_TIGER (1<<2)
